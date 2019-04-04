@@ -39,7 +39,8 @@ var app = (function () {
             //alert("lolo2");
             stompClient.subscribe('/topic/newpoint', function (eventbody) {
                 alert(""+eventbody);
-                var theObject=JSON.parse(eventbody.body);
+                var theObject=JSON.parse(eventbody.body.x);
+                alert("QUE ES  "+theObject);
                
                 
                 
