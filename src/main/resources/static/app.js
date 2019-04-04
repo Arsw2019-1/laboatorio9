@@ -9,7 +9,8 @@ var app = (function () {
     
     var stompClient = null;
 
-    var addPointToCanvas = function (point) {        
+    var addPointToCanvas = function (point) {   
+        
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
         ctx.beginPath();
@@ -23,7 +24,9 @@ var app = (function () {
         var rect = canvas.getBoundingClientRect();
         return {
             x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top
+            y: evt.clientY - rect.top,
+            
+            
         };
     };
 
@@ -39,12 +42,9 @@ var app = (function () {
             //alert("lolo2");
             stompClient.subscribe('/topic/newpoint', function (eventbody) {
                 alert(""+eventbody);
-                var theObject=JSON.parse(eventbody.body.x);
-                alert("QUE ES  "+theObject);
-               
-                
-                
-                
+                var theObject=JSON.parse(eventbody.body);
+                addPointToCanvas(theObject);
+            
             });
         });
 
