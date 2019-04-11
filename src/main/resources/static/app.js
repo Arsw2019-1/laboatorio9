@@ -7,7 +7,7 @@ var app = (function () {
         }
     }
 
-    var id=0;
+    var id = 0;
     var stompClient = null;
 
 
@@ -17,7 +17,20 @@ var app = (function () {
         addPointToCanvas(pt);
         stompClient.send("/topic/newpoint", {}, JSON.stringify({pt}));
         //publicar el evento
-    }
+    };
+    
+    var addPololygonCanvas=function(points){
+        var c2=canvas.getContext('2d');
+        c2.fillStyle='#f00';
+        c2.beginPath();
+        c2.moveTo(points[0].x,points[0].y);
+        c2.lineTo(points[1].x,points[1].y);
+        c2.lineTo(points[2].x,points[2].y);
+        c2.lineTo(points[3].x,points[3].y);
+        c2.closePath();
+        c2.fill();
+    };
+    
 
     var addPointToCanvas = function (point) {
 
@@ -49,13 +62,13 @@ var app = (function () {
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             //alert("lolo2"+topic);
-            stompClient.subscribe('/topic/newpoint'+topic, function (eventbody) {
-                //alert("" + eventbody);
-                
+            stompClient.subscribe('/topic/newpoint' + topic, function (eventbody) {
                 var point = JSON.parse(eventbody.body);
                 addPointToCanvas(new Point(point.x, point.y));
-                //alert("se pinto");
-
+            });
+            stompClient.subscribe('/topic/newpolygon' + topic, function (eventbody) {
+                var point = JSON.parse(eventbody.body);
+                addPololygonCanvas(point);
             });
         });
     };
@@ -70,14 +83,14 @@ var app = (function () {
         },
         conectedSpecific: function () {
             var can = document.getElementById("canvas");
-            id=document.getElementById("identificador").value;
+            id = document.getElementById("identificador").value;
             //alert("que es id "+id);
-            connectAndSubscribe("."+id);
+            connectAndSubscribe("." + id);
 
             canvas.addEventListener("mousedown", function (e) {
                 point = getMousePosition(e);
                 addPointToCanvas(point);
-                stompClient.send("/app/newpoint."+id, {}, JSON.stringify(point));  
+                stompClient.send("/app/newpoint." + id, {}, JSON.stringify(point));
             })
         },
         publishPoint: function (px, py) {
