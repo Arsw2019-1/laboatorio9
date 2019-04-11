@@ -6,8 +6,11 @@
 package edu.eci.arsw.collabpaint;
 
 import edu.eci.arsw.collabpaint.model.Point;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.util.HtmlUtils;
 
@@ -18,15 +21,15 @@ import org.springframework.web.util.HtmlUtils;
 @Controller
 public class PointController {
     
+    @Autowired
+    SimpMessagingTemplate tr;
     
-    
-    
-    @MessageMapping("/hello")
-    @SendTo("/topic/newpoint")
-    public Point points(Point message) throws Exception {
+    @MessageMapping("newpoint.{id}")
+    //@SendTo("/topic/newpoint")
+    public void points(Point message,@DestinationVariable String id) throws Exception {
         Thread.sleep(1000); // simulated delay
-        System.out.println("miremos "+message.getX());
-        //return new Point("El jugador es, " + HtmlUtils.htmlEscape(message.toString()) + "!");
-        return new Point(message.getX(),message.getY());
+        System.out.println("miremos "+message.getX());        
+        tr.convertAndSend("/topic/newpoint."+id,message);
+        //return new Point(message.getX(),message.getY());
     }
 }
